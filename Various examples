@@ -1,0 +1,59 @@
+
+
+const int clockPin = 4; //Pin 11 of 595 [SH_CP]
+const int latchPin = 5; //Pin 12 of 595 [ST_CP] 
+const int dataPin = 6; //Pin 14 of 595 [DS]
+
+void setup() {
+  pinMode(latchPin, OUTPUT);
+  pinMode(clockPin, OUTPUT);
+  pinMode(dataPin, OUTPUT);
+}
+
+
+
+void loop() {
+flashAllHigh();
+delay(500);
+flashAllLow();
+delay(500);
+}
+void updateShiftRegisterLSB(byte led) {
+  digitalWrite(latchPin, LOW);
+  shiftOut(dataPin, clockPin, LSBFIRST, B00000001<<led);
+  digitalWrite(latchPin, HIGH);
+}
+
+void updateShiftRegisterMSB(byte led) {
+  digitalWrite(latchPin, LOW);
+  shiftOut(dataPin, clockPin, MSBFIRST, B00000001<<led);
+  digitalWrite(latchPin, HIGH);
+}
+void backAndForth() {
+  for (int l = 0; l < 8; l++) {
+      updateShiftRegisterLSB(l);
+      delay(300);
+    }
+    for (int j = 0; j < 8; j++) {
+     updateShiftRegisterMSB(j);
+    delay(300);
+    } 
+}
+
+void chase() {
+  for (int k= 0; k < 8; k++) {
+    updateShiftRegisterMSB(k);
+    delay(200);
+  }
+}
+
+void flashAllHigh() {
+  digitalWrite(latchPin, LOW);
+  shiftOut(dataPin, clockPin, MSBFIRST, B11111111);
+  digitalWrite(latchPin, HIGH);
+}
+void flashAllLow() {
+  digitalWrite(latchPin, LOW);
+  shiftOut(dataPin, clockPin, MSBFIRST, B00000000);
+  digitalWrite(latchPin, HIGH);
+}
